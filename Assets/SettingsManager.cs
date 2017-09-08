@@ -1,17 +1,19 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
-using System;
 
-/* Copyright (C) Bilal Itani - All Rights Reserved
+/* Copyright (C) Xenfinity LLC - All Rights Reserved
  * Unauthorized copying of this file, via any medium is strictly prohibited
  * Proprietary and confidential
- * Written by Bilal Itani <bilalitani1@gmail.com>, March 2016
+ * Written by Bilal Itani <bilalitani1@gmail.com>
  */
+
 public enum Difficulty { Fast, Faster, Fastest }
 
-public class SettingsManager : MonoBehaviour
-{
+public class SettingsManager : MonoBehaviour {
+
     #region Settings Component References
 
     public Slider volumeSliderSound;
@@ -47,15 +49,17 @@ public class SettingsManager : MonoBehaviour
     #endregion
 
     private Difficulty currentDifficulty = Difficulty.Fast;
-    
-    void Start()
+
+    #region Monobehaviour API
+
+    void Start ()
     {
-        int difficulty = PlayerPrefs.GetInt(DIFFICULTY_PREF, (int) Difficulty.Fast);
+        int difficulty = PlayerPrefs.GetInt(DIFFICULTY_PREF, (int)Difficulty.Fast);
         currentDifficulty = (Difficulty)difficulty;
 
-        bool isFast = difficulty == (int)Difficulty.Fast;
-        bool isFaster = difficulty == (int)Difficulty.Faster;
-        bool isFastest = difficulty == (int)Difficulty.Fastest;
+        bool isFast = (currentDifficulty == Difficulty.Fast);
+        bool isFaster = (currentDifficulty == Difficulty.Faster);
+        bool isFastest = (currentDifficulty == Difficulty.Fastest);
 
         fastDifficulty.isOn = isFast;
         fasterDifficulty.isOn = isFaster;
@@ -66,9 +70,43 @@ public class SettingsManager : MonoBehaviour
         volumeSliderVoice.value = PlayerPrefs.GetFloat(VO_VOLUME_PREF, 1);
 
         enableTips.isOn = GetBoolPref(TIPS_PREF);
-
         enableBloom.isOn = GetBoolPref(BLOOM_PREF);
     }
+
+    #endregion
+
+    #region Volume
+
+    public void OnChangeSoundVolume(Single value)
+    {
+        SetPref(SFX_VOLUME_PREF, value);
+    }
+
+    public void OnChangeMusicVolume(Single value)
+    {
+        SetPref(MUSIC_VOLUME_PREF, value);
+    }
+
+    public void OnChangeVoiceVolume(Single value)
+    {
+        SetPref(VO_VOLUME_PREF, value);
+    }
+
+    #endregion
+
+    #region Misc
+
+    public void OnToggleTips(bool state)
+    {
+        SetPref(TIPS_PREF, state);
+    }
+
+    public void OnToggleBloom(bool state)
+    {
+        SetPref(BLOOM_PREF, state);
+    }
+
+    #endregion
 
     #region Difficulty
 
@@ -104,47 +142,6 @@ public class SettingsManager : MonoBehaviour
 
     #endregion
 
-    #region Audio
-
-    public void OnChangeSoundVolume(Single value)
-    {
-        SetPref(SFX_VOLUME_PREF, value);
-    }
-
-    public void OnChangeMusicVolume(Single value)
-    {
-        SetPref(MUSIC_VOLUME_PREF, value);
-    }
-
-    public void OnChangeVoiceVolume(Single value)
-    {
-        SetPref(VO_VOLUME_PREF, value);
-    }
-
-    #endregion
-
-    #region Misc
-
-    public void OnToggleTips(bool state)
-    {
-        if (state)
-        {
-            SetPref(TIPS_PREF, state);
-        }
-    }
-
-    public void OnToggleBloom(bool state)
-    {
-        if (state)
-        {
-            SetPref(BLOOM_PREF, state);
-        }
-    }
-
-    #endregion
-
-    #region Pref Setters and Getters
-
     #region Pref Setters
 
     private void SetPref(string key, float value)
@@ -167,16 +164,10 @@ public class SettingsManager : MonoBehaviour
         PlayerPrefs.SetInt(key, Convert.ToInt32(value));
     }
 
-    #endregion
-
-    #region Pref Getters
-
     private bool GetBoolPref(string key, bool defaultValue = true)
     {
         return Convert.ToBoolean(PlayerPrefs.GetInt(key, Convert.ToInt32(defaultValue)));
     }
-
-    #endregion
 
     #endregion
 }
